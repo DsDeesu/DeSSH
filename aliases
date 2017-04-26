@@ -1,0 +1,17 @@
+alias root@empleador='ssh root@empleador'
+alias dees@empleador='ssh dees@empleador'
+alias teamspeak@empleador='ssh TeamSpeak@empleador'
+
+alias root@home='ssh root@home'
+alias dees@home='ssh dees@home'
+
+alias root@rpi='ssh root@rpi'
+alias dees@rpi='ssh dees@rpi'
+
+alias dees@deespc='ssh dees@deespc'
+alias dees@homepc='ssh dees@homepc'
+
+alias dees@mobile='ssh dees@mobile'
+alias dees@mobile2='ssh dees@mobile2'
+
+alias desshver='cat $(demanager -loc)/plugins/files/dessh/version'

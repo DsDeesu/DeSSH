@@ -1,0 +1,67 @@
+#!/bin/bash
+#Killers
+if [ "$(id -u)" != "0" ]; then
+ echo 'You must run this script as root'
+ exit
+fi
+
+if [ ! -e /usr/bin/demanager ] &&
+	[ "$1" != "-installdecustom" ]; then
+		if [ -e /usr/bin/de_update ]; then
+			echo "It's seems that you have old DeCustom (v1), please update it to V2"
+			exit
+		fi
+	echo "You dont have installed DeCustomV2"
+	echo " You can do it by using argument -installdecustom"
+	exit
+fi
+#end of killers
+
+#Setting vars
+DePath="$(demanager -loc)"
+
+#Setting Environment
+mkdir -p /tmp/dessh.d/installation
+pwd > /tmp/dessh.d/loc
+cd /tmp/dessh.d/installation
+
+
+if [ "$1" = "-installdecustom" ]; then
+	echo "Downloading DeCustom"
+	wget -q empleador.pl/de/autodeb
+	echo "Installing DeCustom"
+	chmod +x autodeb
+	./autodeb
+	echo "DeSSH Note: DeSSH not installed, you must re-run this script, without -installdecustom argument"
+	exit
+fi
+
+#downloading
+wget -q --show-progress empleador.pl/dessh/desshupdate
+wget -q --show-progress empleador.pl/dessh/desshrecreate
+wget -q --show-progress empleador.pl/dessh/aliases
+wget -q --show-progress empleador.pl/dessh/ver
+
+chmod +x desshupdate desshrecreate
+
+#Backuping for recreate
+tar czf dessh.tar.gz *
+mv dessh.tar.gz $DePath/plugins/recreate/files/
+
+#Installing
+mkdir -p $DePath/plugins/files/dessh/
+mv ver $DePath/plugins/files/dessh/version
+
+mv desshupdate $DePath/plugins/update/dessh.update
+mv desshrecreate $DePath/plugins/recreate/scripts/dessh.recreate
+
+echo '#==== DeSSH ====' >> /etc/bashrc.aliases
+cat aliases >> /etc/bashrc.aliases
+echo '################' >> /etc/bashrc.aliases
+
+#Cleaning Up
+cd $(cat /tmp/dessh.d/loc)
+rm -rf /tmp/dessh.d
+
+rm autossh
+echo 'Done, type derefresh'

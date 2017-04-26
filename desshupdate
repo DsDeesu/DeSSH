@@ -1,0 +1,51 @@
+#!/bin/bash
+#Killers
+if [ "$(id -u)" != "0" ]; then
+ echo 'DeSSH: You must run this script as root'
+ exit
+fi
+
+if [ "$AUTO" != "true" ]; then
+	echo 'DeSSH: Please use demanager, instead of this script'
+	exit
+fi
+#end of killers
+
+DePath="$(demanager -loc)"
+
+
+	#Check for new version
+	mkdir /tmp/desshUpdate.d
+	pwd > /tmp/desshUpdate.d/loc
+	cd /tmp/desshUpdate.d
+
+	wget -q empleador.pl/dessh/ver
+	newDeSSHVersion=$(cat ver)
+	######################
+
+#Only check?
+if [ "$DEMANAGER_ARG_CHECK" = "true" ]; then
+	if [ "newDeSSHVersion" = "$(cat $DePath/plugins/files/dessh/version)" ]; then
+		echo "DeSSH: You have newest version"
+	else
+		echo "DeSSH: Found new version $newDeSSHVersion"
+	fi
+	cd $(cat /tmp/desshUpdate.d/loc)
+	rm -rf /tmp/desshUpdate.d
+	exit
+fi
+
+if [ "$newDeSSHVersion" != "$(cat $DePath/plugins/files/dessh/version)" ]; then
+	echo "DeSSH: Found new version $newDeSSHVersion! Do you wish to update? [Y]/N"
+	read decs
+	if [ "$decs" = "" ] || [ "$decs" = "Y" ] || [ "$decs" = "y" ]; then
+		wget -q --show-progress empleador.pl/dessh/autossh
+		chmod +x autossh
+		./autossh
+	fi
+else
+	echo "DeSSH: Up to date"
+fi
+
+cd $(cat /tmp/desshUpdate.d/loc)
+rm -rf /tmp/desshUpdate.d
